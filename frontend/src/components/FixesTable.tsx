@@ -18,6 +18,10 @@ const FixesTable: React.FC = () => {
         return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/50';
       case 'LINTING':
         return 'bg-blue-500/20 text-blue-400 border-blue-500/50';
+      case 'IMPORT':
+        return 'bg-purple-500/20 text-purple-400 border-purple-500/50';
+      case 'INDENTATION':
+        return 'bg-pink-500/20 text-pink-400 border-pink-500/50';
       default:
         return 'bg-gray-500/20 text-gray-400 border-gray-500/50';
     }

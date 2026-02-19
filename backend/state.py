@@ -11,6 +11,8 @@ class BugType(str, Enum):
     SYNTAX = "SYNTAX"
     LOGIC = "LOGIC"
     TYPE_ERROR = "TYPE_ERROR"
+    IMPORT = "IMPORT"
+    INDENTATION = "INDENTATION"
 
 
 class FixStatus(str, Enum):
@@ -55,4 +57,6 @@ class AgentState(TypedDict):
     
     # Final results
     final_score: Optional[int]
+    total_failures: Optional[int]
+    iterations_completed: Optional[int]
     status: str

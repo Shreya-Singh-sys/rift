@@ -68,6 +68,7 @@ def scorer_node(state: AgentState) -> AgentState:
     
     state["final_score"] = max(0, score)  # Ensure non-negative
     state["status"] = "completed"
+    state["iterations_completed"] = state.get("iteration", 1)
     
     print(f"  🎯 Final Score: {state['final_score']}")
     

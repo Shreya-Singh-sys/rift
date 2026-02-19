@@ -81,7 +81,34 @@ const ScoreBreakdown: React.FC = () => {
         ))}
       </div>
 
-      <div className="mt-6 p-4 bg-dark-950/50 rounded-lg border border-gray-800">
+      {/* Visual Score Progress Bar */}
+      <div className="mt-6">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-sm text-gray-400 font-medium">Score Progress</span>
+          <span className="text-sm font-bold text-yellow-400">{result.final_score} / 110</span>
+        </div>
+        <div className="w-full bg-gray-800 rounded-full h-4 overflow-hidden">
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: `${Math.min((result.final_score / 110) * 100, 100)}%` }}
+            transition={{ duration: 1, delay: 0.5, ease: 'easeOut' }}
+            className={`h-full rounded-full ${
+              result.final_score >= 100
+                ? 'bg-gradient-to-r from-yellow-500 to-green-400'
+                : result.final_score >= 70
+                ? 'bg-gradient-to-r from-blue-500 to-primary-400'
+                : 'bg-gradient-to-r from-red-600 to-orange-400'
+            }`}
+          />
+        </div>
+        <div className="flex justify-between text-xs text-gray-600 mt-1">
+          <span>0</span>
+          <span>55</span>
+          <span>110</span>
+        </div>
+      </div>
+
+      <div className="mt-4 p-4 bg-dark-950/50 rounded-lg border border-gray-800">
         <div className="text-sm text-gray-400 space-y-1">
           <div className="flex justify-between">
             <span>Formula:</span>

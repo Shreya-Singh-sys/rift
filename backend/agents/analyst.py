@@ -95,6 +95,17 @@ class AnalystAgent:
                 with open(filepath, 'r', encoding='utf-8', errors='replace') as fh:
                     source = fh.read()
                 ast.parse(source, filename=filepath)
+            except IndentationError as e:
+                key = (rel, e.lineno or 1)
+                if key not in seen:
+                    seen.add(key)
+                    errors.append({
+                        "file": rel,
+                        "bug_type": "INDENTATION",
+                        "line": e.lineno or 1,
+                        "description": f"IndentationError: {e.msg} (line {e.lineno}): {(e.text or '').strip()}"
+                    })
+                    print(f"  🟡 IndentationError in {rel} at line {e.lineno}: {e.msg}")
             except SyntaxError as e:
                 key = (rel, e.lineno or 1)
                 if key not in seen:
@@ -176,7 +187,11 @@ class AnalystAgent:
 
             # Determine bug type from surrounding context
             context = "\n".join(lines[max(0, i-3):min(len(lines), i+5)])
-            if "SyntaxError" in context or "invalid syntax" in context or "deff" in context:
+            if "IndentationError" in context or "unexpected indent" in context or "expected an indented block" in context:
+                bug_type = "INDENTATION"
+            elif "ImportError" in context or "ModuleNotFoundError" in context:
+                bug_type = "IMPORT"
+            elif "SyntaxError" in context or "invalid syntax" in context or "deff" in context:
                 bug_type = "SYNTAX"
             elif "TypeError" in context or "NameError" in context or "AttributeError" in context:
                 bug_type = "TYPE_ERROR"
@@ -302,6 +317,10 @@ class AnalystAgent:
         test_output, errors = self.run_tests(repo_path)
         state["test_output"] = test_output
         state["errors_found"] = errors
+        
+        # Track total failures on first iteration only
+        if state.get("total_failures") is None:
+            state["total_failures"] = len(errors)
         
         print(f"📊 Found {len(errors)} errors")
         

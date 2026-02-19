@@ -8,15 +8,23 @@ const Timeline: React.FC = () => {
 
   if (!result) return null;
 
-  // Simulate iteration timeline
+  // Use real iterations_completed if available, otherwise fall back to fixes-based heuristic
+  const iterationsCompleted = result.iterations_completed ?? (result.fixes.length > 0 ? 1 : 0);
+  const allPassed = result.status === 'completed' && result.fixes.every((f) => f.status === 'success');
+
   const iterations = Array.from({ length: maxIterations }, (_, i) => {
     const iterationNum = i + 1;
-    const hasData = iterationNum <= (result.fixes.length > 0 ? 1 : 0);
-    
+    const isDone = iterationNum <= iterationsCompleted;
+    const isLast = iterationNum === iterationsCompleted;
+
     return {
       iteration: iterationNum,
-      status: hasData ? 'completed' : iterationNum === 1 ? 'completed' : 'skipped',
-      fixes: hasData ? result.fixes.length : 0,
+      status: isDone
+        ? isLast && !allPassed && iterationNum === iterationsCompleted
+          ? 'failed'
+          : 'completed'
+        : 'skipped',
+      fixes: isDone ? result.fixes.length : 0,
     };
   });
 

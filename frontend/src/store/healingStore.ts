@@ -18,6 +18,8 @@ export interface HealingResult {
   final_score: number;
   fixes: Fix[];
   status: string;
+  total_failures: number;
+  iterations_completed: number;
 }
 
 interface HealingState {

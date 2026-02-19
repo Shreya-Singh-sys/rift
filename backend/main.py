@@ -54,6 +54,8 @@ class HealResponse(BaseModel):
     final_score: int = 0
     fixes: list = []
     status: str
+    total_failures: int = 0
+    iterations_completed: int = 0
 
 
 @app.get("/")
@@ -95,6 +97,8 @@ async def heal_repository(request: HealRequest):
             "execution_start_time": None,
             "execution_time_minutes": None,
             "final_score": None,
+            "total_failures": None,
+            "iterations_completed": None,
             "status": "initialized"
         }
         
@@ -121,7 +125,9 @@ async def heal_repository(request: HealRequest):
                 }
                 for fix in final_state["fixes"]
             ],
-            "status": final_state["status"]
+            "status": final_state["status"],
+            "total_failures": final_state.get("total_failures") or 0,
+            "iterations_completed": final_state.get("iterations_completed") or final_state.get("iteration") or 1,
         }
         
         # Write results.json

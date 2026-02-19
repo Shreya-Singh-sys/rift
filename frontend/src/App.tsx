@@ -1,6 +1,7 @@
 import React from 'react';
 import { Bot, Sparkles } from 'lucide-react';
 import InputSection from './components/InputSection';
+import RunSummaryCard from './components/RunSummaryCard';
 import ScoreBreakdown from './components/ScoreBreakdown';
 import Timeline from './components/Timeline';
 import FixesTable from './components/FixesTable';
@@ -44,6 +45,7 @@ function App() {
           
           {result && (
             <>
+              <RunSummaryCard />
               <ScoreBreakdown />
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <Timeline />
