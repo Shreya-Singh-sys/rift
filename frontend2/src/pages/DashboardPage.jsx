@@ -41,8 +41,9 @@ export default function DashboardPage({ userName = "Vaishali" }) {
     setLoading(true);
     setApiError(null);
     setResults(null);
-    const API_BASE = process.env.REACT_APP_API_URL
-      ? `https://${process.env.REACT_APP_API_URL}`
+    const raw = process.env.REACT_APP_API_URL || "";
+    const API_BASE = raw
+      ? raw.startsWith("http") ? raw.replace(/\/$/, "") : `https://${raw.replace(/\/$/, "")}`
       : "";
     try {
       const res = await fetch(`${API_BASE}/heal`, {
