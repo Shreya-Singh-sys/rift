@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Github, Activity, Play, LogOut,
+  Github, Activity, Play, LogOut, BookOpen,
   ShieldCheck, User, GitBranch,
   Bug, CheckCircle2, XCircle, Clock,
   RefreshCw, Trophy, GitCommit, FileCode,
@@ -24,6 +24,7 @@ export default function DashboardPage({ userName = "Vaishali" }) {
   const [teamName, setTeamName] = useState("");
   const [leaderName, setLeaderName] = useState("");
   const [maxIterations, setMaxIterations] = useState(5);
+  const [updateDocs, setUpdateDocs] = useState(false);
   const [results, setResults] = useState(null);
   const [apiError, setApiError] = useState(null);
 
@@ -49,6 +50,7 @@ export default function DashboardPage({ userName = "Vaishali" }) {
           team_name: teamName,
           leader_name: leaderName,
           max_iterations: maxIterations,
+          update_docs: updateDocs,
         }),
       });
       if (!res.ok) {
@@ -188,6 +190,24 @@ export default function DashboardPage({ userName = "Vaishali" }) {
               </div>
             </motion.div>
 
+            {/* Feature 3: Auto Documentation Update Toggle */}
+            <motion.div
+              variants={itemVariants}
+              className="flex items-center justify-between p-5 bg-slate-50 rounded-2xl border border-slate-100 cursor-pointer select-none"
+              onClick={() => setUpdateDocs(v => !v)}
+            >
+              <div className="flex items-center gap-3">
+                <BookOpen size={18} className="text-violet-600 flex-shrink-0" />
+                <div>
+                  <div className="text-sm font-black text-slate-800">Update Documentation</div>
+                  <div className="text-xs font-bold text-slate-400">Append AI fix summary to README.md after healing</div>
+                </div>
+              </div>
+              <div className={`relative w-12 h-6 rounded-full transition-colors flex-shrink-0 ${updateDocs ? 'bg-violet-600' : 'bg-slate-200'}`}>
+                <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow-md transition-transform ${updateDocs ? 'translate-x-6' : 'translate-x-0.5'}`} />
+              </div>
+            </motion.div>
+
             {apiError && (
               <motion.div variants={itemVariants} className="flex items-center gap-3 px-5 py-4 bg-red-50 border border-red-200 rounded-2xl text-red-600 font-bold text-sm">
                 <AlertCircle size={18} /> {apiError}
@@ -227,21 +247,34 @@ export default function DashboardPage({ userName = "Vaishali" }) {
                     <div className="w-2 h-7 bg-violet-600 rounded-full" />
                     <h3 className="text-sm font-black text-violet-600 uppercase tracking-[0.3em]">Run Summary</h3>
                   </div>
-                  {/* CI/CD STATUS BADGE */}
-                  <motion.div
-                    initial={{ scale: 0.7, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ type: "spring", stiffness: 200 }}
-                    style={{
-                      background: isPassed ? "#dcfce7" : "#fee2e2",
-                      border: `2px solid ${isPassed ? "#86efac" : "#fca5a5"}`,
-                      color: isPassed ? "#16a34a" : "#dc2626",
-                    }}
-                    className="flex items-center gap-2 px-5 py-2 rounded-full text-xs font-black uppercase tracking-widest"
-                  >
-                    {isPassed ? <CheckCircle2 size={15} /> : <XCircle size={15} />}
-                    CI/CD {isPassed ? "PASSED" : "FAILED"}
-                  </motion.div>
+                  {/* BADGES */}
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <motion.div
+                      initial={{ scale: 0.7, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ type: "spring", stiffness: 200 }}
+                      style={{
+                        background: isPassed ? "#dcfce7" : "#fee2e2",
+                        border: `2px solid ${isPassed ? "#86efac" : "#fca5a5"}`,
+                        color: isPassed ? "#16a34a" : "#dc2626",
+                      }}
+                      className="flex items-center gap-2 px-5 py-2 rounded-full text-xs font-black uppercase tracking-widest"
+                    >
+                      {isPassed ? <CheckCircle2 size={15} /> : <XCircle size={15} />}
+                      CI/CD {isPassed ? "PASSED" : "FAILED"}
+                    </motion.div>
+                    {updateDocs && (
+                      <motion.div
+                        initial={{ scale: 0.7, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
+                        className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-black uppercase tracking-widest"
+                        style={{ background: "#ede9fe", border: "2px solid #c4b5fd", color: "#7c3aed" }}
+                      >
+                        <BookOpen size={13} /> DOCS UPDATED
+                      </motion.div>
+                    )}
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
@@ -504,6 +537,55 @@ export default function DashboardPage({ userName = "Vaishali" }) {
                   </div>
                 </section>
               )}
+
+              {/* ── 5. PREDICTIVE IMPACT ANALYSIS ── */}
+              {results.affected_files && results.affected_files.length > 0 && (
+                <section className="bg-white/90 backdrop-blur-sm p-8 rounded-[2.5rem] shadow-sm violet-highlight-card">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-2 h-7 bg-amber-500 rounded-full" />
+                    <h3 className="text-sm font-black text-amber-600 uppercase tracking-[0.3em]">Predictive Impact Analysis</h3>
+                    <span className="ml-auto px-3 py-1 bg-amber-50 border border-amber-200 text-amber-600 text-[10px] font-black uppercase rounded-full tracking-widest">Side-Effect Report</span>
+                  </div>
+                  <p className="text-xs font-bold text-slate-400 mb-4">These files import modules that were modified — review before merging the PR:</p>
+                  <div className="space-y-2">
+                    {results.affected_files.map((file, idx) => (
+                      <motion.div
+                        key={idx}
+                        initial={{ opacity: 0, x: -12 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: idx * 0.06 }}
+                        className="flex items-center gap-3 p-3 bg-amber-50 border border-amber-100 rounded-xl"
+                      >
+                        <FileCode size={14} className="text-amber-500 flex-shrink-0" />
+                        <code className="text-xs font-bold text-amber-700">{file}</code>
+                        <span className="ml-auto text-[10px] font-black text-amber-400 uppercase tracking-widest">may be affected</span>
+                      </motion.div>
+                    ))}
+                  </div>
+                  <div className="mt-4 p-3 bg-slate-50 rounded-xl border border-slate-100 text-xs font-bold text-slate-500">
+                    ⚠️ Run tests on these files before merging the AI-generated PR.
+                  </div>
+                </section>
+              )}
+
+              {/* ── 6. DOC UPDATE CONFIRMATION ── */}
+              {updateDocs && (
+                <section className="bg-white/90 backdrop-blur-sm p-6 rounded-[2.5rem] shadow-sm violet-highlight-card">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 bg-violet-50 rounded-2xl border border-violet-100 flex-shrink-0">
+                      <BookOpen size={22} className="text-violet-600" />
+                    </div>
+                    <div>
+                      <div className="text-sm font-black text-slate-800 mb-1">📄 Documentation Updated</div>
+                      <div className="text-xs font-bold text-slate-400">AI fix summary appended to <code className="bg-slate-100 px-1.5 py-0.5 rounded text-violet-600">README.md</code> in the cloned repo.</div>
+                    </div>
+                    <div className="ml-auto px-4 py-2 bg-violet-50 border border-violet-200 rounded-full text-xs font-black text-violet-600 uppercase tracking-widest flex-shrink-0">
+                      ✓ Done
+                    </div>
+                  </div>
+                </section>
+              )}
+
             </motion.div>
           )}
         </AnimatePresence>

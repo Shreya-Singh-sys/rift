@@ -45,3 +45,6 @@ Thumbs.db
 # Results
 results.json
 cloned_repos/
+
+# Old frontend (replaced by frontend2)
+frontend/
