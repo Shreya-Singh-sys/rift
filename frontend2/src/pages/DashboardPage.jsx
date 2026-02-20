@@ -41,8 +41,11 @@ export default function DashboardPage({ userName = "Vaishali" }) {
     setLoading(true);
     setApiError(null);
     setResults(null);
+    const API_BASE = process.env.REACT_APP_API_URL
+      ? `https://${process.env.REACT_APP_API_URL}`
+      : "";
     try {
-      const res = await fetch("/heal", {
+      const res = await fetch(`${API_BASE}/heal`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
